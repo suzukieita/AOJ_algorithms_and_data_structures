@@ -35,15 +35,6 @@ def in_order(node)
   in_order(node.right)
 end
 
-def set_in_order(node)
-  if node.nil?
-    return
-  end
-  set_in_order(node.left)
-  $in_order << node
-  set_in_order(node.right)
-end
-
 # def post_order(nodes, id)
 #   if id.nil?
 #     return 
@@ -106,10 +97,7 @@ def delete(z)
       p.right = nil
     end
   elsif z.left && z.right
-    $in_order = []
-    set_in_order(z)
-    z_index = $in_order.index(z)
-    next_node = $in_order[z_index+1]
+    next_node = get_successor(z)
     z.v = next_node.v
     delete(next_node)
   else
@@ -124,6 +112,27 @@ def delete(z)
     
   end
 end
+
+def get_successor(x)
+  if x.right
+    return get_minimum(x.right)
+  end
+
+  y = x.parent
+  while y && x == y.right
+    x = y
+    y = y.parent
+  end
+  return y
+end
+
+def get_minimum(x)
+  while x.left
+    x = x.left
+  end
+  x
+end
+
 
 n = gets.to_i
 root = nil
