@@ -7,7 +7,6 @@ end
 def dijkstra(s)
   d = Array.new($n, Float::INFINITY)
   color = Array.new($n, Color::WHITE)
-  p = Array.new($n, -1)
   
   d[s] = 0
 
@@ -32,7 +31,6 @@ def dijkstra(s)
       if color[v] != Color::BLACK && $m[u][v]
         if d[u] + $m[u][v] < d[v]
           d[v] = d[u] + $m[u][v]
-          p[v] = u
           color[v] = Color::GRAY
         end
       end
