@@ -1,14 +1,14 @@
 class DTree
   def initialize(p)
-    @p = p
-    n = @p.size
-    @t = Array.new(n) { MyNode.new }
+    # @p = p
+    n = p.size
+    @t = Array.new(n)
     @np = 0
     @sum = 0
-    makeDTree(0, n, 0)
+    makeDTree(0, n, 0, p)
   end
 
-  def makeDTree(l, r, depth)
+  def makeDTree(l, r, depth, p)
     unless l < r
       return nil
     end
@@ -19,25 +19,26 @@ class DTree
 
     
     if depth % 2 == 0
-      @p[l...r] = @p[l...r].sort_by{ |p| p.x }
+      new_p = p[l...r].sort_by{ |p| p.x }
     else
-      @p[l...r] = @p[l...r].sort_by{ |p| p.y }
+      new_p = p[l...r].sort_by{ |p| p.y }
     end
     # puts "l: #{l}, r: #{r}, depth: #{depth} px: #{@p.map{|p| p.x}}, py: #{@p.map{|p| p.y}}"
-
-    @t[t].location = mid
-    @t[t].l = makeDTree(l, mid, depth + 1)
-    @t[t].r = makeDTree(mid+1, r, depth + 1)
+    # puts "l: #{l}, r: #{r}, mid: #{mid}, new_p: #{new_p}"
+    node = new_p[mid - l]
+    @t[t] = node
+    @t[t].l = makeDTree(0, mid - l, depth + 1, new_p)
+    @t[t].r = makeDTree(mid+1 - l, r - l, depth + 1, new_p)
 
     return t
   end
 
   def find(v, sx, tx, sy, ty, depth, ans)
-    x = @p[@t[v].location].x
-    y = @p[@t[v].location].y
+    x = @t[v].x
+    y = @t[v].y
 
     if sx <= x && x <= tx && sy <= y && y <= ty
-      ans << @p[@t[v].location].id
+      ans << @t[v].id
     end
 
     if depth % 2 == 0
@@ -58,32 +59,30 @@ class DTree
   end
 end
 
-class MyPoint
-  attr_accessor :x, :y, :id
+class MyNode
+  attr_accessor :x, :y, :id, :location, :l, :r
   def initialize(id:, x:, y:)
     @id = id
     @x = x
     @y = y
-  end
-end
-
-class MyNode
-  attr_accessor :location, :l, :r
-  def initialize
     @location = nil
     @l = nil
     @r = nil
   end
 end
 
-
+start_time = Time.now
 n = gets.to_i
 p = Array.new(n)
 n.times do |i|
   x, y = gets.split.map(&:to_i)
-  p[i] = MyPoint.new(id:i, x:x, y:y)
+  p[i] = MyNode.new(id:i, x:x, y:y)
 end
+# p "Initialze #{Time.now - start_time}s"
+
 d_tree = DTree.new(p)
+# p "Make tree #{Time.now - start_time}s"
+
 q = gets.to_i
 q.times do
   ans = []
@@ -95,3 +94,4 @@ q.times do
   end
   puts ''
 end
+# p "End #{Time.now - start_time}s"
